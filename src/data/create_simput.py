@@ -45,7 +45,7 @@ class GenerateDataForSimput:
         For each variable source, identify the best fit spectral model, write the correct xcm file
         :return:  array of written xcm files.
         """
-        self._df['XCM_FILE'] = ['../../data/processed/simput/eg_spec.xcm'] * self._n_src
+        self._df['XCM_FILE'] = ['../../data/raw/simput/eg_spec.xcm'] * self._n_src
 
     def generate_src_positions(self, attitude):
         """

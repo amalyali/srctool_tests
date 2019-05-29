@@ -47,16 +47,15 @@ class Simulator:
         cmd = ["ero_vis",
                "Attitude=%s" % cfg_dict['attitude'],
                "Simput=%s" % self._simput,
-               "RA=0.0",
-               "DEC=0.0",
+               "SrcRA=0.0",
+               "SrcDec=0.0",
                "GTIfile=%s" % cfg_dict['gti_file'],
                "TSTART=%f" % self._t_start,
                "Exposure=%f" % self._exposure,
                "dt=1.0",
-               "visibility_range=1.0",
+               "visibility_range=1.02",
                "clobber=yes"
                ]
-
         subprocess.check_call(cmd)
 
     def run_sixte(self):
