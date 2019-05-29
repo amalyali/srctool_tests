@@ -8,37 +8,26 @@ import os
 import subprocess
 import json
 
+from esass_utils import *
 from script_config import *
 
-def preclear(*arg):
-    for files in arg:
-        if isinstance(files, str):
-            if os.path.isfile(files):
-                os.remove(files)
-        elif isinstance(files, list):
-            for f in files:
-                if os.path.isfile(f):
-                    os.remove(f)
-        else:
-            sys.exit(f'ERROR: {files}')
+# Load in data
+infile = '%s/merged_%s.fits' % (cfg_dict['evt_dir'], cfg_dict['prefix'])
+outdir = cfg_dict['esass_prod_dir']
+src_reg_file = cfg_dict['src_reg_file']
+outprefix = ""
+lc_suffix = cfg_dict['lc_suffix']
 
-
-Pars2save = ['Version', 'emin_keV', 'emax_keV', 'bandname', 'ecf', 'band2use',
+# Set parameters for running eSASS
+pars2save = ['Version', 'emin_keV', 'emax_keV', 'bandname', 'ecf', 'band2use',
              'infile', 'outdir', 'outprefix', 'cmd_evtool', 'cmd_expmap', 'cmd_ermask',
              'cmd_erbox1', 'cmd_backmap', 'cmd_erbox2', 'cmd_ermldet', 'cmd_sensmap', 'cmd_catprep']
-
-Version = 2
-Simulation = False
+version = cfg_dict['version']
+band2use = [0, 1, 2, 3]
 emin_keV = [0.2, 0.5, 1.0, 2.0]
 emax_keV = [0.5, 1.0, 2.0, 10.]
 bandname = ["1", "2", "3", "4"]
 ecf = [2.57027e+11, 3.69588e+11, 2.47685e+11, 4.26585e+10]
-
-band2use = [0, 1, 2, 3]
-infile = './evt_eFEDS_20190503.fits'
-outdir = './results_20190503'
-outprefix = ""
-Simulation = False
 
 if len(band2use) < len(emin_keV):
     emin_keV = [emin_keV[i] for i in band2use]
@@ -220,62 +209,44 @@ cmd_sensmap = ["ersensmap",
                f"area_flag = Y"
                ]
 
-cmd_catprep = ["catprep", f"infile = {MLCat}", f"outfile = {SrcCat}"]
+cmd_catprep = ["catprep",
+               f"infile = {MLCat}",
+               f"outfile = {SrcCat}"
+               ]
 
-if Simulation:
-    from astropy.io import fits
+cmd_lc = ['srctool',
+          'eventfiles={:s}'.format(infile),
+          'prefix={:s}'.format(os.path.join(outdir, infile)),
+          'suffix={:s}'.format(lc_suffix),
+          'srccoord=%s' % (SrcCat),
+          'srcreg=AUTO',
+          'backreg=AUTO',
+          'todo=LC LCCORR',
+          'insts=1 2 3 4 5 6 7',
+          'flagsel=0',
+          'lctype=REGULAR-',  #TODO
+          'lcpars=1000',  #TODO
+          'lcemin=0.5 2',
+          'lcemax=2. 10.',
+          'lcgamma=1.9',  #TODO
+          'psftype=2D_PSF',  #TODO
+          'clobber=yes'
+          ]
 
-    tstart = fits.getval(infile, 'TSTART', 1) + 100
-    tstop = fits.getval(infile, 'TSTOP', 1) - 100
-    for cmd in cmd_evtool:
-        cmd.append(f'gti = {tstart:.0f} {tstop:.0f}')
-    with open('tmp.GTISTART.tmp', 'w') as ft:
-        ft.write(f'1 {tstart:.0f}\n')
-    with open('tmp.GTISTOP.tmp', 'w') as ft:
-        ft.write(f'1 {tstop:.0f}\n')
-    for nccd in (1, 2, 3, 4, 5, 6, 7):
-        subprocess.run(['fmodtab', f'{infile}[GTI{nccd:d}]', 'START', 'tmp.GTISTART.tmp'])
-        subprocess.run(['fmodtab', f'{infile}[GTI{nccd:d}]', 'STOP', 'tmp.GTISTOP.tmp'])
-    os.remove('tmp.GTISTART.tmp')
-    os.remove('tmp.GTISTOP.tmp')
-
-    with open('tmp.DEADCOR.tmp', 'w') as ft:
-        ft.write(f'1 {tstart:.0f}\n')
-        ft.write(f'2 {tstop:.0f}\n')
-    for nccd in (1, 2, 3, 4, 5, 6, 7):
-        subprocess.run(['fmodtab', f'{infile}[DEADCOR{nccd:d}]', 'TIME', 'tmp.DEADCOR.tmp'])
-    os.remove('tmp.DEADCOR.tmp')
+# ----------
 
 if True:
     if not os.path.isdir(outdir):
         os.mkdir(outdir)
     parameters = locals()
-    logfile = os.path.join(outdir, f'eFEDS_V{Version:03d}.par')
+    logfile = os.path.join(outdir, f'eFEDS_V{version:03d}.par')
     # if os.path.isfile(logfile): sys.exit(f'ERROR: {logfile} already exists, please delete it')
-    json.dump(dict((k, parameters[k]) for k in Pars2save), open(logfile, 'w'), indent=4)
+    json.dump(dict((k, parameters[k]) for k in pars2save), open(logfile, 'w'), indent=4)
 
 if True:
     preclear(EvtImgFiles)
     for cmd in cmd_evtool:
         subprocess.run(cmd, check=True)
-    if Simulation:
-        with open('tmp.GTISTART.tmp', 'w') as ft:
-            ft.write(f'1 {tstart:.0f}\n')
-        with open('tmp.GTISTOP.tmp', 'w') as ft:
-            ft.write(f'1 {tstop:.0f}\n')
-        for evtfile in EvtImgFiles:
-            for nccd in (1, 2, 3, 4, 5, 6, 7):
-                subprocess.run(['fmodtab', f'{evtfile}[GTI{nccd:d}]', 'START', 'tmp.GTISTART.tmp'])
-                subprocess.run(['fmodtab', f'{evtfile}[GTI{nccd:d}]', 'STOP', 'tmp.GTISTOP.tmp'])
-        os.remove('tmp.GTISTART.tmp')
-        os.remove('tmp.GTISTOP.tmp')
-        with open('tmp.DEADCOR.tmp', 'w') as ft:
-            ft.write(f'1 {tstart:.0f}\n')
-            ft.write(f'2 {tstop:.0f}\n')
-        for evtfile in EvtImgFiles:
-            for nccd in (1, 2, 3, 4, 5, 6, 7):
-                subprocess.run(['fmodtab', f'{evtfile}[DEADCOR{nccd:d}]', 'TIME', 'tmp.DEADCOR.tmp'])
-        os.remove('tmp.DEADCOR.tmp')
 
     preclear(ExpMapFiles)
     subprocess.run(cmd_expmap, check=True)
@@ -296,8 +267,10 @@ if True:
     preclear(SrcMapFiles, MLCat)
     subprocess.run(cmd_ermldet, check=True)
 
-    preclear(SenMap, AreaTable)
-    subprocess.run(cmd_sensmap, check=True)
+    #preclear(SenMap, AreaTable)
+    #subprocess.run(cmd_sensmap, check=True)
 
     preclear(SrcCat)
     subprocess.run(cmd_catprep, check=True)
+
+    preclear()

@@ -4,6 +4,8 @@ Preprocess the simulated event files to make compatible with eSASS.
 A. Malyali, 2019. amalyali@mpe.mpg.de
 """
 import subprocess
+from script_config import *
+
 
 ccds = [1, 2, 3, 4, 5, 6, 7]
 
@@ -30,7 +32,7 @@ class PrepareForEsass:
 
             cmd = ["ero_calevents",
                    "Projection=AIT",
-                   "Attitude=../../data/eRASS_Pc87M55_3dobi_att_remeis.fits",
+                   "Attitude=%s" % cfg_dict['attitude'],
                    "clobber=yes",
                    "EvtFile=%s" % uncal_file,
                    "eroEvtFile=%s" % cal_file,
