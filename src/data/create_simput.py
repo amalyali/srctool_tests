@@ -6,16 +6,9 @@ import numpy as np
 import os.path
 import pickle
 from tqdm import tqdm
+
 from spec_tools import get_flux_in_range, integ_spec
-
-
-EFEDS_ATT = '../../../erosita_efeds/data/raw/efeds_pv_all_attitude.fits'
-E_MIN = 0.5
-E_MAX = 2.0
-N_BINS = 1000
-T_START = 5.7e8
-EXPOSURE = 5.70187999e8-5.7e8
-DAYS2SECS = 24.0 * 3600.0
+from script_config import *
 
 
 class GenerateDataForSimput:
@@ -86,8 +79,8 @@ class MakeEfedsSimput:
         c_dec = fits.Column(name='DEC', format='D', unit='deg', array=sdec)
         c_imgrota = fits.Column(name='IMGROTA', format='D', unit='deg', array=np.zeros(self._n_src))
         c_imgscal = fits.Column(name='IMGSCAL', format='D', array=np.ones(self._n_src))
-        c_emin = fits.Column(name='E_MIN', format='D', unit='keV', array=[E_MIN] * self._n_src)
-        c_emax = fits.Column(name='E_MAX', format='D', unit='keV', array=[E_MAX] * self._n_src)
+        c_emin = fits.Column(name='E_MIN', format='D', unit='keV', array=[cfg_dict['simput_e_min']] * self._n_src)
+        c_emax = fits.Column(name='E_MAX', format='D', unit='keV', array=[cfg_dict['simput_e_max']] * self._n_src)
         c_flux = fits.Column(name='FLUX', format='D', unit='erg/s/cm**2', array=sflux)
         c_image = fits.Column(name='IMAGE', format='32A', array=([''] * self._n_src))
 
@@ -131,8 +124,8 @@ class MakeEfedsSimput:
             fluxes.append(spec_data[1, :])
 
         c_name = fits.Column(name='NAME', format='32A', array=names)
-        c_energy = fits.Column(name='ENERGY', format='%iE' % N_BINS, unit='keV', array=energies)
-        c_flux = fits.Column(name='FLUXDENSITY', format='%iE' % N_BINS, unit='photon/s/cm**2/keV', array=fluxes)
+        c_energy = fits.Column(name='ENERGY', format='%iE' % cfg_dict['simput_spec_n_bins'], unit='keV', array=energies)
+        c_flux = fits.Column(name='FLUXDENSITY', format='%iE' % cfg_dict['simput_spec_n_bins'], unit='photon/s/cm**2/keV', array=fluxes)
 
         coldefs = fits.ColDefs([c_name, c_energy, c_flux])
         hdu = fits.BinTableHDU.from_columns(coldefs)
@@ -149,5 +142,5 @@ class MakeEfedsSimput:
 
 if __name__ == '__main__':
     # 1. Generate data
-    simput_data = GenerateDataForSimput(500, EFEDS_ATT)
+    simput_data = GenerateDataForSimput(cfg_dict['n_src'], cfg_dict['attitude'])
     MakeEfedsSimput(simput_data._df).make_simput()
