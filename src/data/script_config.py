@@ -10,5 +10,7 @@ cfg_dict = {"simput": "../../data/raw/simput/blank.fits",
             "gti_file": "../../data/raw/efeds_pv_all.gti",
             "attitude": "../../../erosita_efeds/data/raw/efeds_pv_all_attitude.fits",
             "evt_dir": "../../data/raw/events/efeds/",
-            "prefix": "blank_"
+            "prefix": "blank_",
+            "ra_cen": 135.0,
+            "dec_cen": 1.5
             }

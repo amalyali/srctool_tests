@@ -68,6 +68,7 @@ class Simulator:
                "Simput=%s" % self._simput,
                "Prefix=%s" % prefix,
                "Attitude=%s" % cfg_dict['attitude'],
+               "GTIFile=%s" % cfg_dict['gti_file'],
                "RA=0.0",
                "Dec=0.0",
                "TSTART=%s" % self._t_start,
