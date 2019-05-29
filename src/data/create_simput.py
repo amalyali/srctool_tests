@@ -137,7 +137,7 @@ class MakeEfedsSimput:
 
     def make_simput(self):
         outf = fits.HDUList([fits.PrimaryHDU(), self._src_hdu, self._spec_hdu])
-        outf.writeto('../../data/processed/simput/test.fits', overwrite=True)
+        outf.writeto(cfg_dict['simput'], overwrite=True)
 
 
 if __name__ == '__main__':

@@ -1,4 +1,4 @@
-cfg_dict = {"simput": "../../data/raw/simput/",
+cfg_dict = {"simput": "../../data/raw/simput/blank.fits",
             "n_src": 100,
             "simput_e_min": 0.5,
             "simput_e_max": 2.0,
