@@ -10,7 +10,6 @@ from spec_tools import get_flux_in_range, integ_spec
 
 
 EFEDS_ATT = '../../../erosita_efeds/data/raw/efeds_pv_all_attitude.fits'
-XMM3_LABELLED = '../../data/3XMM_DR8cat_labelled.fits'
 E_MIN = 0.5
 E_MAX = 2.0
 N_BINS = 1000
@@ -24,21 +23,23 @@ class GenerateDataForSimput:
     Class for generating the data required for simput
     """
     def __init__(self, n_src, attitude):
-        self._n_src = n_src
+        self._n_src = int(n_src)
         self._df = self.initialise_df()
         self.generate_src_positions(attitude)
         self.get_xspec_names()
         self.compute_fluxes()
+        print(self._df)
 
     def initialise_df(self):
         """"
         Create dataframe to hold the SIMPUT data
         """
-        simput_id_arr = np.arange(self._n_src)
+        simput_id_arr = np.arange(0, self._n_src)
         index = simput_id_arr
         columns = ['SIMPUT_ID']
-
-        return pd.DataFrame(index=index, columns=columns)
+        df = pd.DataFrame(index=index, columns=columns)
+        df['SIMPUT_ID'] = simput_id_arr
+        return df
 
     def compute_fluxes(self):
         """
@@ -51,14 +52,14 @@ class GenerateDataForSimput:
         For each variable source, identify the best fit spectral model, write the correct xcm file
         :return:  array of written xcm files.
         """
-        self._df['XCM_FILE'] = ['../../data/processed/eg_spec.xcm']
+        self._df['XCM_FILE'] = ['../../data/processed/simput/eg_spec.xcm'] * self._n_src
 
     def generate_src_positions(self, attitude):
         """
         Randomly sample positions from the attitude file. TO IMPROVE ON
         """
         att = Table.read(attitude, hdu=1, format='fits').to_pandas()[['RA', 'DEC']]
-        positions = att.loc[np.random.randint(1, len(att['RA']), len(self._n_src))]
+        positions = att.loc[np.random.randint(1, len(att['RA']), self._n_src)]
         self._df['RA_SIMPUT'] = positions['RA'].values
         self._df['DEC_SIMPUT'] = positions['DEC'].values
 
@@ -115,15 +116,19 @@ class MakeEfedsSimput:
         """
         sid = self._df_simput['SIMPUT_ID'].values
         s_xcm = self._df_simput['XCM_FILE'].values
+        print(s_xcm)
 
         names, energies, fluxes = [], [], []
 
-        for i, xcm in zip(sid, s_xcm):
-            with open('%s.pkl' % xcm, 'rb') as f:
-                spec_data = pickle.load(f)
-                names.append('SPEC_%s' % str(i).zfill(10))
-                energies.append(spec_data[0, :])
-                fluxes.append(spec_data[1, :])
+        # Create spectral data
+        get_flux_in_range(s_xcm[0], 0.5, 2.0, 100, True)
+        with open('%s.pkl' % s_xcm[0], 'rb') as f:
+            spec_data = pickle.load(f)
+
+        for i in sid:
+            names.append('SPEC_%s' % str(i).zfill(10))
+            energies.append(spec_data[0, :])
+            fluxes.append(spec_data[1, :])
 
         c_name = fits.Column(name='NAME', format='32A', array=names)
         c_energy = fits.Column(name='ENERGY', format='%iE' % N_BINS, unit='keV', array=energies)
@@ -144,13 +149,5 @@ class MakeEfedsSimput:
 
 if __name__ == '__main__':
     # 1. Generate data
-    simput_data = GenerateDataForSimput(XMM3_LABELLED, EFEDS_ATT)
-    pickled_simput_data = '../../data/processed/simput/blank_simputdata.pkl'
-    with open(pickled_simput_data, 'wb') as f:
-        pickle.dump(simput_data._df, f)
-
-    # 2. Create SIMPUT data
-    with open(pickled_simput_data, 'rb') as f:
-        simput_data = pickle.load(f)
-    print(simput_data)
-    MakeEfedsSimput(simput_data).make_simput()
+    simput_data = GenerateDataForSimput(500, EFEDS_ATT)
+    MakeEfedsSimput(simput_data._df).make_simput()
