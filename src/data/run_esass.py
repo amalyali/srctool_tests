@@ -22,6 +22,7 @@ lc_suffix = cfg_dict['lc_suffix']
 pars2save = ['Version', 'emin_keV', 'emax_keV', 'bandname', 'ecf', 'band2use',
              'infile', 'outdir', 'outprefix', 'cmd_evtool', 'cmd_expmap', 'cmd_ermask',
              'cmd_erbox1', 'cmd_backmap', 'cmd_erbox2', 'cmd_ermldet', 'cmd_sensmap', 'cmd_catprep']
+
 version = cfg_dict['version']
 band2use = [0, 1, 2, 3]
 emin_keV = [0.2, 0.5, 1.0, 2.0]
