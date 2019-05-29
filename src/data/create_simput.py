@@ -6,8 +6,17 @@ import numpy as np
 import os.path
 import pickle
 from tqdm import tqdm
-
 from spec_tools import get_flux_in_range, integ_spec
+
+
+EFEDS_ATT = '../../../erosita_efeds/data/raw/efeds_pv_all_attitude.fits'
+XMM3_LABELLED = '../../data/3XMM_DR8cat_labelled.fits'
+E_MIN = 0.5
+E_MAX = 2.0
+N_BINS = 1000
+T_START = 5.7e8
+EXPOSURE = 5.70187999e8-5.7e8
+DAYS2SECS = 24.0 * 3600.0
 
 
 class GenerateDataForSimput:
@@ -136,13 +145,12 @@ class MakeEfedsSimput:
 if __name__ == '__main__':
     # 1. Generate data
     simput_data = GenerateDataForSimput(XMM3_LABELLED, EFEDS_ATT)
-    pickled_simput_data = '../../data/processed/simput/xmm3_df_simputdata.pkl'
+    pickled_simput_data = '../../data/processed/simput/blank_simputdata.pkl'
     with open(pickled_simput_data, 'wb') as f:
-        pickle.dump(simput_data._xmm_df_var, f)
+        pickle.dump(simput_data._df, f)
 
     # 2. Create SIMPUT data
     with open(pickled_simput_data, 'rb') as f:
         simput_data = pickle.load(f)
     print(simput_data)
-    MakeEfedsSimput(simput_data, False).make_simput()
-
+    MakeEfedsSimput(simput_data).make_simput()
