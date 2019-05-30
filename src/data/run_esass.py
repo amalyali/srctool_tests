@@ -19,7 +19,7 @@ outprefix = ""
 lc_suffix = cfg_dict['lc_suffix']
 
 # Set parameters for running eSASS
-pars2save = ['Version', 'emin_keV', 'emax_keV', 'bandname', 'ecf', 'band2use',
+pars2save = ['version', 'emin_keV', 'emax_keV', 'bandname', 'ecf', 'band2use',
              'infile', 'outdir', 'outprefix', 'cmd_evtool', 'cmd_expmap', 'cmd_ermask',
              'cmd_erbox1', 'cmd_backmap', 'cmd_erbox2', 'cmd_ermldet', 'cmd_sensmap', 'cmd_catprep']
 

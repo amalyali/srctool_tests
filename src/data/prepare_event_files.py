@@ -27,7 +27,7 @@ class PrepareForEsass:
         Calibrate event lists from SIXTE (mainly to ensure we have the correct extensions for the FITS files).
         """
         for ii in ccds:
-            uncal_file = '%s/%s_ccd%s_evt.fits' % (self._data_dir, self._prefix, ii)
+            uncal_file = '%s/%sccd%s_evt.fits' % (self._data_dir, self._prefix, ii)
             cal_file = '%s/cal_%s_ccd%s_evt.fits' % (self._data_dir, self._prefix, ii)
 
             cmd = ["ero_calevents",
