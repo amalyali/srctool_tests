@@ -62,7 +62,7 @@ class Simulator:
         """
         Launch erosim from python.
         """
-        prefix = "%s%s" % (cfg_dict['evt_dir'], cfg_dict['prefix'])
+        prefix = "%s/%s" % (cfg_dict['evt_dir'], cfg_dict['prefix'])
 
         cmd = ["erosim",
                "Simput=%s" % self._simput,

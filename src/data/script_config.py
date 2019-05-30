@@ -2,7 +2,7 @@ version = 1
 
 cfg_dict = {"version": version,
             "simput": "../../data/raw/simput/blank.fits",
-            "n_src": 10,
+            "n_src": 20,
             "simput_e_min": 0.5,
             "simput_e_max": 2.0,
             "simput_spec_n_bins": 1000,
