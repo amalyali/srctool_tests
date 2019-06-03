@@ -49,11 +49,16 @@ SenMap = os.path.join(outdir, f"{outprefix}020_SenMap.fits")
 AreaTable = os.path.join(outdir, f"{outprefix}020_AreTab.fits")
 SrcCat = os.path.join(outdir, f"{outprefix}020_SrcCat.fits")
 
+print('length of evtimgfiles: %s' % len(EvtImgFiles))
+print('length of emin_kev: %s' % len(emin_keV))
+print('length of emin_kev: %s' % len(emax_keV))
+
+
 cmd_evtool = []
 if 1:
     cmd_evtool.append(["evtool",
                        f"eventfiles = {infile}",
-                       f"outfile = EvtImg_full.fits",
+                       f"outfile = {outdir}EvtImg_full.fits",
                        f"emin = 0.2",
                        f"emax = 10",
                        f"image = yes",
@@ -100,10 +105,10 @@ cmd_erbox1 = ["erbox",
               f"boxlist = {BoxCat1}",
               f"expimages = {' '.join(ExpMapFiles)}",
               f"detmasks = {DetMask}",
-              f"emin = " + "".join(f"{x * 1000:g}" for x in emin_keV),
-              f"emax = " + "".join(f"{x * 1000:g}" for x in emax_keV),
+              f"emin = " + " ".join(f"{x * 1000:g}" for x in emin_keV),
+              f"emax = " + " ".join(f"{x * 1000:g}" for x in emax_keV),
               f"hrdef = ",
-              f"ecf = " + "".join(f"{x:g}" for x in ecf),
+              f"ecf = " + " ".join(f"{x:g}" for x in ecf),
               f"nruns = 3",
               f"likemin = 6.0",
               f"boxsize = 4",
@@ -143,10 +148,10 @@ cmd_erbox2 = ["erbox",
               f"expimages = {' '.join(ExpMapFiles)}",
               f"detmasks = {DetMask}",
               f"bkgimages = {' '.join(BkgMapFiles)}",
-              f"emin = " + "".join(f"{x * 1000:g}" for x in emin_keV),
-              f"emax = " + "".join(f"{x * 1000:g}" for x in emax_keV),
+              f"emin = " + " ".join(f"{x * 1000:g}" for x in emin_keV),
+              f"emax = " + " ".join(f"{x * 1000:g}" for x in emax_keV),
               f"hrdef = ",
-              f"ecf = " + "".join(f"{x:g}" for x in ecf),
+              f"ecf = " + " ".join(f"{x:g}" for x in ecf),
               f"nruns = 3",
               f"likemin = 4.",
               f"boxsize = 4",
@@ -163,10 +168,10 @@ cmd_ermldet = ["ermldet",
                f"expimages = {' '.join(ExpMapFiles)}",
                f"detmasks = {DetMask}",
                f"bkgimages = {' '.join(BkgMapFiles)}",
-               f"emin = " + "".join(f"{x * 1000:g}" for x in emin_keV),
-               f"emax = " + "".join(f"{x * 1000:g}" for x in emax_keV),
+               f"emin = " + " ".join(f"{x * 1000:g}" for x in emin_keV),
+               f"emax = " + " ".join(f"{x * 1000:g}" for x in emax_keV),
                f"hrdef = ",
-               f"ecf = " + "".join(f"{x:g}" for x in ecf),
+               f"ecf = " + " ".join(f"{x:g}" for x in ecf),
                f"likemin = 5.",
                f"extlikemin = 3.",
                f"compress_flag = N",
@@ -196,9 +201,9 @@ cmd_sensmap = ["ersensmap",
                f"detmasks = {DetMask}",
                f"bkgimages = {' '.join(BkgMapFiles)}",
                f"srcimages = {' '.join(SrcMapFiles)}",
-               f"emin = " + "".join(f"{x * 1000:g}" for x in emin_keV),
-               f"emax = " + "".join(f"{x * 1000:g}" for x in emax_keV),
-               f"ecf = " + "".join(f"{x:g}" for x in ecf),
+               f"emin = " + " ".join(f"{x * 1000:g}" for x in emin_keV),
+               f"emax = " + " ".join(f"{x * 1000:g}" for x in emax_keV),
+               f"ecf = " + " ".join(f"{x:g}" for x in ecf),
                f"method = aper",
                f"aper_type = BOX",
                f"aper_size = 4.5",
@@ -217,7 +222,7 @@ cmd_catprep = ["catprep",
 
 cmd_lc = ['srctool',
           'eventfiles={:s}'.format(infile),
-          'prefix={:s}'.format(os.path.join(outdir, infile)),
+          'prefix={:s}'.format(outdir),
           'suffix={:s}'.format(lc_suffix),
           'srccoord=%s' % (SrcCat),
           'srcreg=AUTO',
@@ -245,16 +250,16 @@ if True:
     json.dump(dict((k, parameters[k]) for k in pars2save), open(logfile, 'w'), indent=4)
 
 if True:
-    preclear(EvtImgFiles)
-    for cmd in cmd_evtool:
-        subprocess.run(cmd, check=True)
+    #preclear(EvtImgFiles)
+    #for cmd in cmd_evtool:
+    #    subprocess.run(cmd, check=True)
 
-    preclear(ExpMapFiles)
-    subprocess.run(cmd_expmap, check=True)
+    #preclear(ExpMapFiles)
+    #subprocess.run(cmd_expmap, check=True)
 
-    preclear(DetMask)
-    subprocess.run(cmd_ermask, check=True)
-
+    #preclear(DetMask)
+    #subprocess.run(cmd_ermask, check=True)
+    """
     preclear(BoxCat1)
     subprocess.run(cmd_erbox1, check=True)
 
@@ -273,5 +278,6 @@ if True:
 
     preclear(SrcCat)
     subprocess.run(cmd_catprep, check=True)
-
-    preclear()
+    
+    preclear()"""
+    subprocess.check_call(cmd_lc)

@@ -16,7 +16,7 @@ cfg_dict = {"version": version,
             "esass_prod_dir": "../../data/raw/products/esass/%s/" % version,
             "src_reg_file": "../../data/raw/products/esass/",  # TODO
             "prefix": "blank",
-            "lc_suffix": "lc",
+            "lc_suffix": "LightCurve_",
             "ra_cen": 135.0,
             "dec_cen": 1.5
             }

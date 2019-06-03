@@ -38,7 +38,7 @@ class GenerateDataForSimput:
         """
         For each xcm file in xspec_names, compute the flux in the interval E_MIN-E_MAX [keV]
         """
-        self._df['FLUX'] = [1e-12] * self._n_src
+        self._df['FLUX'] = [1e-13] * self._n_src
 
     def get_xspec_names(self):
         """
