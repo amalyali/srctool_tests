@@ -250,16 +250,16 @@ if True:
     json.dump(dict((k, parameters[k]) for k in pars2save), open(logfile, 'w'), indent=4)
 
 if True:
-    #preclear(EvtImgFiles)
-    #for cmd in cmd_evtool:
-    #    subprocess.run(cmd, check=True)
+    preclear(EvtImgFiles)
+    for cmd in cmd_evtool:
+        subprocess.run(cmd, check=True)
 
-    #preclear(ExpMapFiles)
-    #subprocess.run(cmd_expmap, check=True)
+    preclear(ExpMapFiles)
+    subprocess.run(cmd_expmap, check=True)
 
-    #preclear(DetMask)
-    #subprocess.run(cmd_ermask, check=True)
-    """
+    preclear(DetMask)
+    subprocess.run(cmd_ermask, check=True)
+
     preclear(BoxCat1)
     subprocess.run(cmd_erbox1, check=True)
 
@@ -279,5 +279,5 @@ if True:
     preclear(SrcCat)
     subprocess.run(cmd_catprep, check=True)
     
-    preclear()"""
+    preclear()
     subprocess.check_call(cmd_lc)
