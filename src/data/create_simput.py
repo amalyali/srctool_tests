@@ -53,8 +53,10 @@ class GenerateDataForSimput:
         """
         att = Table.read(attitude, hdu=1, format='fits').to_pandas()[['RA', 'DEC']]
         positions = att.loc[np.random.randint(1, len(att['RA']), self._n_src)]
-        self._df['RA_SIMPUT'] = positions['RA'].values
-        self._df['DEC_SIMPUT'] = positions['DEC'].values
+        self._df['RA_SIMPUT'] = (positions['RA'].values +
+                                 np.random.uniform(-0.01, 0.01, self._n_src) * positions['RA'].values)
+        self._df['DEC_SIMPUT'] = (positions['DEC'].values +
+                                  np.random.uniform(-0.01, 0.01, self._n_src) * positions['DEC'].values)
 
 
 class MakeEfedsSimput:
