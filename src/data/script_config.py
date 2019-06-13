@@ -18,5 +18,5 @@ cfg_dict = {"version": version,
             "prefix": "blank",
             "lc_suffix": "LightCurve_",
             "ra_cen": 135.0,
-            "dec_cen": 1.5
+            "dec_cen": 1.
             }
