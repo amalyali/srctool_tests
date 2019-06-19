@@ -15,10 +15,10 @@ class GenerateDataForSimput:
     """
     Class for generating the data required for simput
     """
-    def __init__(self, n_src, attitude):
+    def __init__(self, n_src):
         self._n_src = int(n_src)
         self._df = self.initialise_df()
-        self.generate_src_positions(attitude)
+        self.generate_src_positions()
         self.get_xspec_names()
         self.compute_fluxes()
         print(self._df)
@@ -47,16 +47,14 @@ class GenerateDataForSimput:
         """
         self._df['XCM_FILE'] = ['../../data/raw/simput/eg_spec.xcm'] * self._n_src
 
-    def generate_src_positions(self, attitude):
+    def generate_src_positions(self):
         """
         Randomly sample positions from the attitude file. TO IMPROVE ON
         """
-        att = Table.read(attitude, hdu=1, format='fits').to_pandas()[['RA', 'DEC']]
-        positions = att.loc[np.random.randint(1, len(att['RA']), self._n_src)]
-        self._df['RA_SIMPUT'] = (positions['RA'].values +
-                                 np.random.uniform(-0.01, 0.01, self._n_src) * positions['RA'].values)
-        self._df['DEC_SIMPUT'] = (positions['DEC'].values +
-                                  np.random.uniform(-0.01, 0.01, self._n_src) * positions['DEC'].values)
+        random_positions = np.loadtxt('../../../xmm_transients/data/raw/efeds_positions.txt')
+        positions = random_positions[np.random.randint(1, len(random_positions), self._n_src)]
+        self._df['RA_SIMPUT'] = positions[:, 0]
+        self._df['DEC_SIMPUT'] = positions[:, 1]
 
 
 class MakeEfedsSimput:
@@ -144,5 +142,7 @@ class MakeEfedsSimput:
 
 if __name__ == '__main__':
     # 1. Generate data
-    simput_data = GenerateDataForSimput(cfg_dict['n_src'], cfg_dict['attitude'])
+    for k, v in cfg_dict.iteritems():
+        print(k, v)
+    simput_data = GenerateDataForSimput(cfg_dict['n_src'])
     MakeEfedsSimput(simput_data._df).make_simput()
