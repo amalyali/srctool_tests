@@ -9,7 +9,7 @@ cfg_dict = {"version": version,
             "t_start": 6.3E8,
             "exposure": 0.00119932E8,
             "seed": 42,
-            "with_bkg": True,
+            "with_bkg": False,
             "evt_dir": "../../data/raw/events/efeds",
             "esass_prod_dir": "../../data/raw/products/esass/%s/" % version,
             "src_reg_file": "../../data/raw/products/esass/",  # TODO

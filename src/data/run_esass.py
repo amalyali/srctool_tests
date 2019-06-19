@@ -11,8 +11,10 @@ import json
 from esass_utils import *
 from script_config import *
 
+prefix = 'blank'
+
 # Load in data
-infile = '%s/merged_%s.fits' % (cfg_dict['evt_dir'], cfg_dict['prefix'])
+infile = '%s/merged_%s.fits' % (cfg_dict['evt_dir'], blank)
 outdir = cfg_dict['esass_prod_dir']
 src_reg_file = cfg_dict['src_reg_file']
 outprefix = ""

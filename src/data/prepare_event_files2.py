@@ -88,25 +88,8 @@ class PrepareForEsass:
 
 if __name__ == '__main__':
     prefix = 'blank'
-    #attitude_arr = [0, 1, 2]
-    attitude_arr = [0]
+
     merged_events = []
-    for i in attitude_arr:
-        print(i)
-        prepper = PrepareForEsass('../../data/eFEDS_att%s.fits' % i,
-                                  '%s%s' % (prefix, i),
-                                  cfg_dict['ra_cen'],
-                                  cfg_dict['dec_cen'])
-        prepper.prep_and_merge()
 
-        # Merge the merged events of each attitude file together
-        merged_events.append("%s/merged_%s%s.fits" % (cfg_dict['evt_dir'], prefix, i))
-
-    merged_cal_evt_file = "%s/merged_%s.fits" % (cfg_dict['evt_dir'], prefix)
-    cmd = ["evtool",
-           "eventfiles=%s" % ' '.join([str(x) for x in merged_events]),
-           "outfile=%s" % merged_cal_evt_file,
-           "pattern=15",
-           "clobber=yes"]
-    print(cmd)
-    subprocess.check_call(cmd)
+    PrepareForEsass('../../data/eFEDS_attitude.fits', '%s' % prefix,
+                    cfg_dict['ra_cen'], cfg_dict['dec_cen']).prep_and_merge()

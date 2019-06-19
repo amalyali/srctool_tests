@@ -3,7 +3,11 @@ Simulate eROSITA event data from sky model using SIXTE.
 
 A. Malyali, 2019. amalyali@mpe.mpg.de
 """
+from astropy.io import fits
+from astropy.table import Table
 import errno
+from joblib import Parallel
+from joblib import delayed as d
 import os
 import subprocess
 
@@ -22,6 +26,7 @@ class Simulator:
         :param exposure: Length of time to simulate for.
         :param seed: Seed for random number generator
         """
+        print(simput, attitude, gti, prefix, with_bkg_par, t_start, exposure, seed)
         self._simput = simput
         self._attitude = attitude
         self._gti = gti
@@ -48,6 +53,7 @@ class Simulator:
         Use this as input to SIXTE call for reducing computational expense.
         """
         cmd = ["ero_vis",
+               "clobber=yes",
                "Attitude=%s" % self._attitude,
                "Simput=%s" % self._simput,
                "SrcRA=0.0",
@@ -55,11 +61,11 @@ class Simulator:
                "GTIfile=%s" % self._gti,
                "TSTART=%f" % self._t_start,
                "Exposure=%f" % self._exposure,
+               "chatter=15",
                "dt=1.0",
-               "visibility_range=1.02",
-               "clobber=yes"
+               "visibility_range=1.02"
                ]
-        subprocess.check_call(cmd)
+        #subprocess.check_call(cmd)
 
     def run_sixte(self):
         """
@@ -95,20 +101,23 @@ class Simulator:
         Run SIXTE simulation of eRASS 1
         """
         self.make_event_directory()
-        self.compute_gti()
+        #self.compute_gti()
         self.run_sixte()
 
 
+def run_sixte(simput, attitude, gti, prefix, with_bkg, seed):
+    df = Table.read(attitude, hdu=1).to_pandas()
+    t_start = df['TIME'][0]
+    exposure = df['TIME'][len(df) - 1] - df['TIME'][0]
+    simulator = Simulator(simput, attitude, gti, prefix, with_bkg, t_start, exposure, seed)
+    simulator.run_all()
+
+
 if __name__ == '__main__':
-    attitude_arr = [0, 1, 2]
+    attitude_arr = [1]
+    param_arr = []
     for i in attitude_arr:
-        print(i)
-        simulator = Simulator(cfg_dict['simput'],
-                              '../../data/eFEDS_att%s.fits' % i,
-                              '../../data/eFEDS_att%s.gti' % i,
-                              '%s/blank' % cfg_dict['evt_dir'],
-                              cfg_dict['with_bkg'],
-                              cfg_dict['t_start'],
-                              cfg_dict['exposure'],
-                              cfg_dict['seed'])
-        simulator.run_all()
+        #param_arr.append(['../../data/eFEDS_att%s.fits' % i, '../../data/eFEDS_att%s.gti' % i, 'blank%s' % i])
+        param_arr.append(['../../data/eFEDS_attitude.fits', '../../data/eFEDS_gti.gti', 'blank'])
+    Parallel(n_jobs=1)(d(run_sixte)(cfg_dict['simput'], p[0], p[1], p[2], cfg_dict['with_bkg'], cfg_dict['seed'])
+                            for p in param_arr)
