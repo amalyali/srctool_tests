@@ -14,7 +14,7 @@ class Simulator:
     """
     SIXTE grid simulator for transient events.
     """
-    def __init__(self, simput, with_bkg_par, t_start, exposure, seed):
+    def __init__(self, simput, attitude, gti, prefix, with_bkg_par, t_start, exposure, seed):
         """
         :param with_agn: Simulate with AGN.
         :param with_bkg_par: Simulate with particle background.
@@ -23,6 +23,9 @@ class Simulator:
         :param seed: Seed for random number generator
         """
         self._simput = simput
+        self._attitude = attitude
+        self._gti = gti
+        self._prefix = prefix
         self._with_bkg_par = bool(with_bkg_par)
         self._t_start = float(t_start)  # secs
         self._exposure = float(exposure)
@@ -45,11 +48,11 @@ class Simulator:
         Use this as input to SIXTE call for reducing computational expense.
         """
         cmd = ["ero_vis",
-               "Attitude=%s" % cfg_dict['attitude'],
+               "Attitude=%s" % self._attitude,
                "Simput=%s" % self._simput,
                "SrcRA=0.0",
                "SrcDec=0.0",
-               "GTIfile=%s" % cfg_dict['gti_file'],
+               "GTIfile=%s" % self._gti,
                "TSTART=%f" % self._t_start,
                "Exposure=%f" % self._exposure,
                "dt=1.0",
@@ -62,13 +65,13 @@ class Simulator:
         """
         Launch erosim from python.
         """
-        prefix = "%s/%s" % (cfg_dict['evt_dir'], cfg_dict['prefix'])
+        prefix = "%s/%s" % (cfg_dict['evt_dir'], self._prefix)
 
         cmd = ["erosim",
                "Simput=%s" % self._simput,
                "Prefix=%s" % prefix,
-               "Attitude=%s" % cfg_dict['attitude'],
-               "GTIFile=%s" % cfg_dict['gti_file'],
+               "Attitude=%s" % self._attitude,
+               "GTIFile=%s" % self._gti,
                "RA=0.0",
                "Dec=0.0",
                "TSTART=%s" % self._t_start,
@@ -97,9 +100,15 @@ class Simulator:
 
 
 if __name__ == '__main__':
-    simulator = Simulator(cfg_dict['simput'],
-                          cfg_dict['with_bkg'],
-                          cfg_dict['t_start'],
-                          cfg_dict['exposure'],
-                          cfg_dict['seed'])
-    simulator.run_all()
+    attitude_arr = [0, 1, 2]
+    for i in attitude_arr:
+        print(i)
+        simulator = Simulator(cfg_dict['simput'],
+                              '../../data/eFEDS_att%s.fits' % i,
+                              '../../data/eFEDS_att%s.gti' % i,
+                              '%s/blank' % cfg_dict['evt_dir'],
+                              cfg_dict['with_bkg'],
+                              cfg_dict['t_start'],
+                              cfg_dict['exposure'],
+                              cfg_dict['seed'])
+        simulator.run_all()

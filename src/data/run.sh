@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-source activate transients
+source activate efeds
 source /home/erosita/sw/sass-setup.sh eSASSdevel
 
 python create_simput.py
