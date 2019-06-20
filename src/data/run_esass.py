@@ -14,7 +14,7 @@ from script_config import *
 prefix = 'blank'
 
 # Load in data
-infile = '%s/merged_%s.fits' % (cfg_dict['evt_dir'], blank)
+infile = '%s/merged_%s.fits' % (cfg_dict['evt_dir'], prefix)
 outdir = cfg_dict['esass_prod_dir']
 src_reg_file = cfg_dict['src_reg_file']
 outprefix = ""
