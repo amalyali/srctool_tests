@@ -1,7 +1,7 @@
 version = 1
 
 cfg_dict = {"version": version,
-            "simput": "../../data/raw/simput/blank.fits",
+            "simput": "../../data/raw/simput/efeds_xmm_variables.fits",  # blank.fits
             "n_src": 10,
             "simput_e_min": 0.5,
             "simput_e_max": 2.0,
