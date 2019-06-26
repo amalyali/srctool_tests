@@ -61,7 +61,7 @@ class Simulator:
                "GTIfile=%s" % self._gti,
                "TSTART=%f" % self._t_start,
                "Exposure=%f" % self._exposure,
-               "chatter=15",
+               "chatter=3",
                "dt=1.0",
                "visibility_range=1.02"
                ]
@@ -108,7 +108,7 @@ class Simulator:
 def run_sixte(simput, attitude, gti, prefix, with_bkg, seed):
     df = Table.read(attitude, hdu=1).to_pandas()
     t_start = df['TIME'][0]
-    exposure = df['TIME'][len(df) - 1] - df['TIME'][0]
+    exposure = df['TIME'][len(df) - 1] - t_start
     simulator = Simulator(simput, attitude, gti, prefix, with_bkg, t_start, exposure, seed)
     simulator.run_all()
 

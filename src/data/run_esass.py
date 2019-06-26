@@ -232,8 +232,8 @@ cmd_lc = ['srctool',
           'todo=LC LCCORR',
           'insts=1 2 3 4 5 6 7',
           'flagsel=0',
-          'lctype=REGULAR-',  #TODO
-          'lcpars=1000',  #TODO
+          'lctype=SRCGTI',  #TODO
+          'lcpars=1000',  # ignored for lcytype=SRCGTI
           'lcemin=0.5 2',
           'lcemax=2. 10.',
           'lcgamma=1.9',  #TODO

@@ -7,14 +7,16 @@ cfg_dict = {"version": version,
             "simput_e_max": 2.0,
             "simput_spec_n_bins": 100,
             "t_start": 6.3E8,
-            "exposure": 0.00119932E8,
+            "exposure": 6.30359798E8 - 6.3E8,
             "seed": 42,
-            "with_bkg": False,
+            "with_bkg": True,
             "evt_dir": "../../data/raw/events/efeds",
             "esass_prod_dir": "../../data/raw/products/esass/%s/" % version,
             "src_reg_file": "../../data/raw/products/esass/",  # TODO
             "prefix": "blank",
-            "lc_suffix": "LightCurve_",
+            "lc_suffix": "_xmm_",
             "ra_cen": 135.0,
             "dec_cen": 1.
             }
+
+

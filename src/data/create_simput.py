@@ -144,5 +144,5 @@ if __name__ == '__main__':
     # 1. Generate data
     for k, v in cfg_dict.items():
         print(k, v)
-    simput_data = GenerateDataForSimput(cfg_dict['n_src'])
+    #simput_data = GenerateDataForSimput(cfg_dict['n_src'])
     MakeEfedsSimput(simput_data._df).make_simput()
